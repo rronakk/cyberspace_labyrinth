@@ -6,8 +6,8 @@ Finding all rooms with broken light, and writing on all lit rooms in sorted orde
 import requests
 import json
 
-URL = "http://challenge2.airtime.com:7182"
-HEADERS = {"X-Labyrinth-Email": "knockronak@gmail.com"}
+_url = "http://challenge2.airtime.com:7182"
+_headers = {"X-Labyrinth-Email": "knockronak@gmail.com"}
 
 
 def get_writing(room):
@@ -16,9 +16,9 @@ def get_writing(room):
         room : Room ID of the labyrinth
     Returns:
         dictionary {order: writing}."""
-    response = requests.get(URL + "/wall",
+    response = requests.get(_url + "/wall",
                             params={"roomId": room},
-                            headers=HEADERS)
+                            headers=_headers)
     body = json.loads(response.text)
     return {int(body['order']): body['writing']}
 
@@ -31,16 +31,16 @@ def get_neighbors(room):
         list of rooms in the neighborhood
     """
     neighbors = []
-    response = requests.get(URL + "/exits", params={"roomId": room},
-                            headers=HEADERS)
+    response = requests.get(_url + "/exits", params={"roomId": room},
+                            headers=_headers)
     exists = json.loads(response.text)["exits"]
     if not exists:
         return []
     for direction in exists:
-        adj_room_response = requests.get(URL + "/move",
+        adj_room_response = requests.get(_url + "/move",
                                          params={"roomId": room,
                                                  "exit": direction},
-                                         headers=HEADERS)
+                                         headers=_headers)
         neighbors.append(json.loads(adj_room_response.text)["roomId"])
     return neighbors
 
@@ -50,8 +50,8 @@ def main():
     """
     broken_rooms = []
     wall_writing = {}
-    start_response = requests.get(URL + "/start",
-                                  headers=HEADERS)
+    start_response = requests.get(_url + "/start",
+                                  headers=_headers)
     start_room = json.loads(start_response.text)['roomId']
     # Do breadth-first search through the labyrinth.
     queue = [start_room]
@@ -74,7 +74,7 @@ def main():
 
     challenge_code = ''.join([value for (key, value) in sorted(wall_writing.items())])
     data = json.dumps({"roomIds": broken_rooms, "challenge": challenge_code})
-    submit = requests.post(URL + "/report", data=data, headers=HEADERS)
+    submit = requests.post(_url + "/report", data=data, headers=_headers)
     return submit.text
 
 if __name__ == "__main__":
