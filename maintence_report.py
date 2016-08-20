@@ -55,11 +55,11 @@ def main():
     start_room = json.loads(start_response.text)['roomId']
     # Do breadth-first search through the labyrinth.
     queue = [start_room]
-    visited_rooms = {}
+    visited_rooms = []
     while queue:
         curr_room = queue.pop(0)
         # keep track of visited room
-        visited_rooms[curr_room] = True
+        visited_rooms.append(curr_room)
         # Check writing and order on current wall
         if -1 in get_writing(curr_room).keys():
             broken_rooms.append(curr_room)
